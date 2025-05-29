@@ -27,5 +27,5 @@ public class Tache {
 
     @ManyToOne
     @JoinColumn(name = "utilisateur_id")
-    private Utilisateur assignéA;
+    private Utilisateur utilisateurAssigne;
 }

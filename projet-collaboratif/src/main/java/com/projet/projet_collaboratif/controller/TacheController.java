@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/taches")
+@CrossOrigin(origins = "http://localhost:4200")
 public class TacheController {
 
     @Autowired
@@ -38,16 +39,17 @@ public class TacheController {
     @PutMapping("/{id}")
     public Tache updateTache(@PathVariable Long id, @RequestBody Tache updatedTache) {
         return tacheService.getTacheById(id)
-            .map(tache -> {
-                tache.setTitre(updatedTache.getTitre());
-                tache.setDescription(updatedTache.getDescription());
-                tache.setDateDebut(updatedTache.getDateDebut());
-                tache.setDateFin(updatedTache.getDateFin());
-                tache.setStatut(updatedTache.getStatut());
-                tache.setProjet(updatedTache.getProjet());
-                tache.setAssignéA(updatedTache.getAssignéA());
-                return tacheService.saveTache(tache);
-            })
-            .orElseThrow(() -> new RuntimeException("Tâche non trouvée avec l'id : " + id));
+                .map(tache -> {
+                    tache.setTitre(updatedTache.getTitre());
+                    tache.setDescription(updatedTache.getDescription());
+                    tache.setDateDebut(updatedTache.getDateDebut());
+                    tache.setDateFin(updatedTache.getDateFin());
+                    tache.setStatut(updatedTache.getStatut());
+                    tache.setProjet(updatedTache.getProjet());
+                    tache.setUtilisateurAssigne(updatedTache.getUtilisateurAssigne());
+
+                    return tacheService.saveTache(tache);
+                })
+                .orElseThrow(() -> new RuntimeException("Tâche non trouvée avec l'id : " + id));
     }
 }

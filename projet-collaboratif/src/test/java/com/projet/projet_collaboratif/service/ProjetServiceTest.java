@@ -20,50 +20,65 @@ class ProjetServiceTest {
     void setUp() {
         projetRepository = mock(ProjetRepository.class);
         projetService = new ProjetService();
-        projetService.setProjetRepository(projetRepository); 
+        projetService.setProjetRepository(projetRepository);
     }
 
     @Test
     void testGetAllProjets() {
         Projet p1 = new Projet();
-        p1.setNom("Projet Alpha");
+        p1.setNom("Projet A");
 
         Projet p2 = new Projet();
-        p2.setNom("Projet Beta");
+        p2.setNom("Projet B");
 
         when(projetRepository.findAll()).thenReturn(Arrays.asList(p1, p2));
 
         var result = projetService.getAllProjets();
 
         assertEquals(2, result.size());
-        verify(projetRepository, times(1)).findAll();
+        verify(projetRepository).findAll();
     }
 
     @Test
     void testGetProjetById() {
         Projet p = new Projet();
         p.setId(1L);
-        p.setNom("Projet Test");
+        p.setNom("Unique Projet");
 
         when(projetRepository.findById(1L)).thenReturn(Optional.of(p));
 
         var result = projetService.getProjetById(1L);
 
         assertTrue(result.isPresent());
-        assertEquals("Projet Test", result.get().getNom());
+        assertEquals("Unique Projet", result.get().getNom());
     }
 
     @Test
     void testSaveProjet() {
         Projet p = new Projet();
-        p.setNom("Projet Nouveau");
+        p.setNom("To be saved");
 
         when(projetRepository.save(p)).thenReturn(p);
 
         var saved = projetService.saveProjet(p);
 
         assertNotNull(saved);
-        assertEquals("Projet Nouveau", saved.getNom());
+        assertEquals("To be saved", saved.getNom());
         verify(projetRepository).save(p);
     }
+
+    @Test
+    void testDeleteProjet() {
+        doNothing().when(projetRepository).deleteById(1L);
+        projetService.deleteProjet(1L);
+        verify(projetRepository).deleteById(1L);
+    }
+
+    @Test
+    void testGetProjetByIdNotFound() {
+        when(projetRepository.findById(999L)).thenReturn(Optional.empty());
+        Optional<Projet> result = projetService.getProjetById(999L);
+        assertTrue(result.isEmpty());
+}
+
 }

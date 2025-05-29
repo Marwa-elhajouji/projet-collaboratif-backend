@@ -15,6 +15,7 @@ public class UtilisateurService {
 
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+    @Autowired
     private RoleRepository roleRepository;
 
 
@@ -26,13 +27,14 @@ public class UtilisateurService {
         return utilisateurRepository.findById(id);
     }
 
-   public Utilisateur saveUtilisateur(Utilisateur utilisateur) {
-    if (utilisateur.getRole() == null) {
-        Role userRole = roleRepository.findAll().stream()
-            .filter(r -> "USER".equals(r.getNom()))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Rôle USER introuvable"));
-        utilisateur.setRole(userRole);
+    public Utilisateur saveUtilisateur(Utilisateur utilisateur) {
+    if (utilisateur.getRole() != null && utilisateur.getRole().getId() != null) {
+        Role roleComplet = roleRepository.findById(utilisateur.getRole().getId())
+                .orElseThrow(
+                        () -> new RuntimeException("Rôle introuvable avec l'id : " + utilisateur.getRole().getId()));
+        utilisateur.setRole(roleComplet);
+    } else {
+        throw new RuntimeException("Aucun rôle fourni");
     }
     return utilisateurRepository.save(utilisateur);
 }
@@ -56,6 +58,10 @@ public class UtilisateurService {
 }
 public void setUtilisateurRepository(UtilisateurRepository repo) {
     this.utilisateurRepository = repo;
+}
+
+public void setRoleRepository(RoleRepository roleRepository) {
+    this.roleRepository = roleRepository;
 }
 
 
