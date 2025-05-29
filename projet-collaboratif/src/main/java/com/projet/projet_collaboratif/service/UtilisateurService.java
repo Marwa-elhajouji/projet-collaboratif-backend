@@ -58,5 +58,9 @@ public void setUtilisateurRepository(UtilisateurRepository repo) {
     this.utilisateurRepository = repo;
 }
 
+public void setRoleRepository(RoleRepository roleRepository) {
+    this.roleRepository = roleRepository;
+}
+
 
 }

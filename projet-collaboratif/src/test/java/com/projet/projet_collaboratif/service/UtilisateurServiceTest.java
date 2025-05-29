@@ -1,71 +1,98 @@
 package com.projet.projet_collaboratif.service;
 
+import com.projet.projet_collaboratif.model.Role;
 import com.projet.projet_collaboratif.model.Utilisateur;
+import com.projet.projet_collaboratif.repository.RoleRepository;
 import com.projet.projet_collaboratif.repository.UtilisateurRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class UtilisateurServiceTest {
-
     private UtilisateurRepository utilisateurRepository;
+    private RoleRepository roleRepository;
     private UtilisateurService utilisateurService;
 
     @BeforeEach
     void setUp() {
         utilisateurRepository = mock(UtilisateurRepository.class);
+        roleRepository = mock(RoleRepository.class);
         utilisateurService = new UtilisateurService();
         utilisateurService.setUtilisateurRepository(utilisateurRepository);
+        utilisateurService.setRoleRepository(roleRepository);
     }
 
     @Test
-    void testGetAllUtilisateurs() {
-        Utilisateur u1 = new Utilisateur();
-        u1.setNom("Alice");
+    void testUpdateUtilisateur_success() {
+        Utilisateur existing = new Utilisateur();
+        existing.setId(1L);
+        existing.setNom("Old");
 
-        Utilisateur u2 = new Utilisateur();
-        u2.setNom("Bob");
+        Utilisateur update = new Utilisateur();
+        update.setNom("New");
+        update.setEmail("new@mail.com");
+        update.setMotDePasse("pass");
 
-        when(utilisateurRepository.findAll()).thenReturn(Arrays.asList(u1, u2));
+        when(utilisateurRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(utilisateurRepository.save(any())).thenReturn(update);
 
-        List<Utilisateur> result = utilisateurService.getAllUtilisateurs();
-
-        assertEquals(2, result.size());
-        verify(utilisateurRepository, times(1)).findAll();
+        Utilisateur result = utilisateurService.updateUtilisateur(1L, update);
+        assertEquals("New", result.getNom());
     }
 
     @Test
-    void testGetUtilisateurById() {
+    void testUpdateUtilisateur_notFound() {
+        when(utilisateurRepository.findById(42L)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> utilisateurService.updateUtilisateur(42L, new Utilisateur()));
+    }
+
+    @Test
+    void testDeleteUtilisateur() {
+        doNothing().when(utilisateurRepository).deleteById(1L);
+        utilisateurService.deleteUtilisateur(1L);
+        verify(utilisateurRepository).deleteById(1L);
+    }
+
+    @Test
+    void testFindByEmail() {
         Utilisateur u = new Utilisateur();
-        u.setId(1L);
-        u.setNom("Test");
+        u.setEmail("test@mail.com");
+        when(utilisateurRepository.findByEmail("test@mail.com")).thenReturn(u);
 
-        when(utilisateurRepository.findById(1L)).thenReturn(Optional.of(u));
-
-        Optional<Utilisateur> result = utilisateurService.getUtilisateurById(1L);
-
-        assertTrue(result.isPresent());
-        assertEquals("Test", result.get().getNom());
+        Utilisateur result = utilisateurService.findByEmail("test@mail.com");
+        assertEquals("test@mail.com", result.getEmail());
     }
-
     @Test
-    void testSaveUtilisateur() {
+    void shouldAssignRoleIfNull() {
         Utilisateur u = new Utilisateur();
-        u.setNom("New User");
+        u.setNom("Role Auto");
 
-        when(utilisateurRepository.save(u)).thenReturn(u);
+        Role userRole = new Role();
+        userRole.setNom("USER");
 
-        Utilisateur saved = utilisateurService.saveUtilisateur(u);
+        when(roleRepository.findAll()).thenReturn(List.of(userRole));
+        when(utilisateurRepository.save(any())).thenReturn(u);
 
-        assertNotNull(saved);
-        assertEquals("New User", saved.getNom());
-        verify(utilisateurRepository).save(u);
-    }
+    Utilisateur saved = utilisateurService.saveUtilisateur(u);
+
+    assertNotNull(saved);
+    assertEquals("Role Auto", saved.getNom());
+    verify(utilisateurRepository).save(u);
+}
+
+@Test
+void shouldThrowIfNoUserRoleFound() {
+    Utilisateur u = new Utilisateur();
+
+    when(roleRepository.findAll()).thenReturn(List.of());
+
+    assertThrows(RuntimeException.class, () -> utilisateurService.saveUtilisateur(u));
+}
+
 }

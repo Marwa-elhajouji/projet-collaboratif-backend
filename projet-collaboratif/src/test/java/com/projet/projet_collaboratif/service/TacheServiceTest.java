@@ -70,4 +70,19 @@ class TacheServiceTest {
         assertEquals("Tâche à enregistrer", saved.getTitre());
         verify(tacheRepository).save(t);
     }
+
+    @Test
+    void testDeleteTache() {
+        doNothing().when(tacheRepository).deleteById(1L);
+        tacheService.deleteTache(1L);
+        verify(tacheRepository).deleteById(1L);
+    }
+
+    @Test
+    void testGetTacheByIdNotFound() {
+        when(tacheRepository.findById(888L)).thenReturn(Optional.empty());
+        Optional<Tache> result = tacheService.getTacheById(888L);
+        assertTrue(result.isEmpty());
+}
+
 }
