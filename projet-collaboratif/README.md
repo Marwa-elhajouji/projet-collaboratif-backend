@@ -101,16 +101,15 @@ To view the report:
 target/site/jacoco/index.html
 ```
 
-###  HTML Report Included
+### Online HTML Report
 
-The JaCoCo coverage report is also versioned in the repository for quick access:  
-👉 [View Coverage Report](docs/coverage/jacoco/index.html)
+You can view the full JaCoCo code coverage report online here:  
+👉 [View Coverage Report](https://marwa-elhajouji.github.io/projet-collaboratif-backend/coverage/jacoco/index.html)
 
-You’ll see:
-
-- Executed and missed lines
-- Covered and missed branches
-- Per-class and per-method breakdown
+It includes:
+- Missed vs executed instructions
+- Covered and uncovered branches
+- Detailed per-package and per-class coverage
 
 ## Database Schema
 
