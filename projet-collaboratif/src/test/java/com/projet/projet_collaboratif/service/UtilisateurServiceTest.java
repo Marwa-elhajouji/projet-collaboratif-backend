@@ -7,7 +7,6 @@ import com.projet.projet_collaboratif.repository.UtilisateurRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,30 +68,35 @@ class UtilisateurServiceTest {
         assertEquals("test@mail.com", result.getEmail());
     }
     @Test
-    void shouldAssignRoleIfNull() {
+    void shouldAssignRoleIfRoleWithIdPresent() {
         Utilisateur u = new Utilisateur();
         u.setNom("Role Auto");
 
         Role userRole = new Role();
+        userRole.setId(1L);
         userRole.setNom("USER");
 
-        when(roleRepository.findAll()).thenReturn(List.of(userRole));
+        u.setRole(userRole);
+        when(roleRepository.findById(1L)).thenReturn(Optional.of(userRole));
         when(utilisateurRepository.save(any())).thenReturn(u);
 
-    Utilisateur saved = utilisateurService.saveUtilisateur(u);
+        Utilisateur saved = utilisateurService.saveUtilisateur(u);
 
-    assertNotNull(saved);
-    assertEquals("Role Auto", saved.getNom());
-    verify(utilisateurRepository).save(u);
-}
+        assertNotNull(saved);
+        assertEquals("Role Auto", saved.getNom());
+        verify(utilisateurRepository).save(u);
+    }
 
-@Test
-void shouldThrowIfNoUserRoleFound() {
-    Utilisateur u = new Utilisateur();
+    @Test
+    void shouldThrowIfNoUserRoleFound() {
+        Utilisateur u = new Utilisateur();
+        Role r = new Role();
+        r.setId(2L);
+        u.setRole(r);
 
-    when(roleRepository.findAll()).thenReturn(List.of());
+        when(roleRepository.findById(2L)).thenReturn(Optional.empty());
 
-    assertThrows(RuntimeException.class, () -> utilisateurService.saveUtilisateur(u));
-}
-
+        assertThrows(RuntimeException.class, () -> utilisateurService.saveUtilisateur(u));
+    }
+    
 }
