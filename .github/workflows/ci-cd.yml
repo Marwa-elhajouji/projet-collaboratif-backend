@@ -64,16 +64,21 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v3
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: "21"
+          distribution: "temurin"
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: Build JAR with Maven
         run: |
-         cd projet-collaboratif
-         mvn clean package -DskipTests
+          cd projet-collaboratif
+          mvn clean package -DskipTests
 
       - name: Build Docker image
         run: |
           cd projet-collaboratif
-          docker build -t marwaelhajouji/projet-collaboratif-backend .
+          docker build -t marwael/projet-collaboratif-backend .
       - name: Push Docker image to Docker Hub
-        run: docker push marwaelhajouji/projet-collaboratif-backend
+        run: docker push marwael/projet-collaboratif-backend
