@@ -8,6 +8,20 @@ on:
 jobs:
   publish-coverage:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: projetcollaboratif
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -21,11 +35,14 @@ jobs:
       - name: Run tests and generate coverage
         run: |
           cd projet-collaboratif
-          mvn clean verify
+          mvn clean verify \
+            -Dspring.datasource.url=jdbc:mysql://localhost:3306/projetcollaboratif \
+            -Dspring.datasource.username=root \
+            -Dspring.datasource.password=root
 
-      - name: Publish to GitHub Pages
+      - name: Publish JaCoCo to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: projet-collaboratif/target/site/jacoco
-          publish_branch: gh-pages 
+          publish_branch: gh-pages
