@@ -101,6 +101,11 @@ To view the report:
 target/site/jacoco/index.html
 ```
 
+###  HTML Report Included
+
+The JaCoCo coverage report is also versioned in the repository for quick access:  
+👉 [View Coverage Report](docs/coverage/jacoco/index.html)
+
 You’ll see:
 
 - Executed and missed lines
