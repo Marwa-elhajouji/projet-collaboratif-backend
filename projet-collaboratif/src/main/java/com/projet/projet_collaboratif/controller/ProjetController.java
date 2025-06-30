@@ -39,6 +39,7 @@ public class ProjetController {
         return projetService.getProjetById(id)
                 .map(projet -> {
                     projet.setNom(updatedProjet.getNom());
+                    projet.setDescription(updatedProjet.getDescription());
                     Projet saved = projetService.saveProjet(projet);
                     return ResponseEntity.ok(saved);
                 })
