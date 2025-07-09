@@ -47,6 +47,7 @@ By default, the API will run at http://localhost:8080.
 ## Running with Docker
 
 ```bash
+cd projet-collaboratif
 docker-compose up --build
 ```
 
@@ -80,12 +81,7 @@ The backend is packaged into a Docker image and published automatically to Docke
 
 👉 [Docker Hub – Backend Image](https://hub.docker.com/r/marwael/projet-collaboratif-backend)
 
-To run the latest version from Docker Hub:
 
-```bash
-docker pull marwael/projet-collaboratif-backend:latest
-docker run -p 8080:8080 marwael/projet-collaboratif-backend
-```  
 
 ## CI/CD Pipeline – GitHub Actions
 
